@@ -6,12 +6,17 @@ import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.paint.Color;
+
+import java.io.IOException;
+
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+import service.CompilerService;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -38,11 +43,43 @@ public class Expression {
         expressionInput.setFont(GomePixel.size(24));
         expressionInput.setPromptText("Type your expression here...");
 
-        //button
         Button submitButton = new Button("Submit");
         submitButton.setFont(GomePixel.size(18));
 
-        VBox textBox = new VBox(15, title, expressionInput, submitButton);
+        TextArea outputArea = new TextArea();
+        outputArea.setEditable(false);
+        outputArea.setFont(GomePixel.size(18));
+        outputArea.setPromptText("Output will be displayed here...");
+        outputArea.setWrapText(true);
+        outputArea.setPrefHeight(180);
+        outputArea.setBackground(new Background(
+                new BackgroundFill(
+                        Color.web("#f5efe8"),
+                        new CornerRadii(6),
+                        Insets.EMPTY
+                )
+        ));
+
+        submitButton.setOnAction(e -> {
+            String expression = expressionInput.getText().trim();
+            if (expression.isEmpty()) {
+                outputArea.setText("Please enter a valid expression.");
+                return;
+            }
+            outputArea.setText("Parsing...");
+            try {
+                String compilerResult = CompilerService.analyze(expression);
+                if (compilerResult.toLowerCase().contains("erreur")) {
+                    outputArea.setText("Erreur: " + compilerResult);
+                } else {
+                    outputArea.setText("Success: " + compilerResult);
+                }
+            } catch (IOException ex) {
+                outputArea.setText("An error occurred during compilation.");
+            }
+        });
+
+        VBox textBox = new VBox(15, title, expressionInput, submitButton, outputArea);
         textBox.setAlignment(Pos.CENTER);
         textBox.setPadding(new Insets(20));
 

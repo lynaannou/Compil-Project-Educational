@@ -78,9 +78,13 @@ public class SplashScreen {
             Tutorials tutorialsScreen = new Tutorials();
             tutorialsScreen.start(stage);
         }); */
-        pause.setOnFinished(e -> {
+       /*  pause.setOnFinished(e -> {
             Expression expressionScreen = new Expression();
             expressionScreen.start(stage);
+        }); */ 
+        pause.setOnFinished(e -> {
+            TutorialsLibrary tutorialsLibraryScreen = new TutorialsLibrary();
+            tutorialsLibraryScreen.start(stage);
         });
         pause.play();
     }

@@ -1,5 +1,6 @@
 package screens;
 
+import javafx.animation.PauseTransition;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -11,10 +12,12 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import java.io.File;
+import javafx.util.Duration;
 
 public class SplashScreen {
 
-    public void show(Stage stage) {
+    public void start(Stage stage) {
 
         // --- Background image ---
         Image backgroundImage = new Image(
@@ -60,9 +63,25 @@ public class SplashScreen {
         StackPane root = new StackPane(background, textBox);
 
         Scene scene = new Scene(root, 850, 600);
+        File icon = new File("/images/brain-icon.png");
+        Image iconImage = new Image(icon.toURI().toString());
+        stage.getIcons().add(iconImage);
+        
+
 
         stage.setScene(scene);
         stage.setTitle("Compilation Playground");
         stage.show();
+
+        PauseTransition pause = new PauseTransition(Duration.seconds(3.5));
+       /*  pause.setOnFinished(e -> {
+            Tutorials tutorialsScreen = new Tutorials();
+            tutorialsScreen.start(stage);
+        }); */
+        pause.setOnFinished(e -> {
+            Expression expressionScreen = new Expression();
+            expressionScreen.start(stage);
+        });
+        pause.play();
     }
 }

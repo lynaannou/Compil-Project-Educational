@@ -11,7 +11,7 @@ public class MainApp extends Application {
     public void start(Stage stage) {
         GomePixel.load();
         SplashScreen splash = new SplashScreen();
-        splash.show(stage);
+        splash.start(stage);
     }
 
     public static void main(String[] args) {

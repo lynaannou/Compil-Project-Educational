@@ -7,8 +7,7 @@ import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.paint.Color;
-import javafx.scene.input.KeyEvent;
-import javafx.scene.media.AudioClip;
+
 
 import java.io.IOException;
 
@@ -24,8 +23,7 @@ import javafx.stage.Stage;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.text.Text;
-import javafx.scene.text.TextFlow;
+
 
 public class Expression {
 
@@ -49,13 +47,7 @@ public class Expression {
         expressionInput.setFont(ChonkyBits.size(24));
         expressionInput.setPromptText("Type your expression here...");
         expressionInput.setStyle("-fx-text-fill:rgb(255, 166, 225);");
-        AudioClip keySound = new AudioClip(
-        SoundManager.class.getResource("/sounds/kb-sound.wav").toExternalForm()
-        );
-
-        expressionInput.addEventHandler(KeyEvent.KEY_PRESSED, e -> {
-            keySound.play();
-        });
+        
 
         Button submitButton = new Button("Submit");
         submitButton.setFont(GomePixel.size(18));

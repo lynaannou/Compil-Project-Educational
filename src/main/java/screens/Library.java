@@ -66,6 +66,11 @@ public class Library {
               + "produit(2, 3, 4)\n"
               + "moyenne(4, 6, 8)\n\n"),
 
+            section("⚡ Power Function",
+                "puissance(a, b) : computes a raised to the power of b\n",
+                "Example:\n"
+              + "puissance(2, 3) → 8\n\n"),
+
             section("❌ Invalid Expressions",
                 "The following expressions are rejected by the compiler:\n",
                 "5 / \n"

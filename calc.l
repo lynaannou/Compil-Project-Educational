@@ -14,6 +14,8 @@
 "exp"       return EXP;
 "ln"        return LN;
 "sqrt"      return SQRT;
+"puissance"    return POW;
+"**"           return POW_OP;
 
 [0-9]+(\.[0-9]+)? {
     yylval.val = atof(yytext);

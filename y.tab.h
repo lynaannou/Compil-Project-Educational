@@ -63,7 +63,9 @@ extern int yydebug;
     TAN = 264,                     /* TAN  */
     EXP = 265,                     /* EXP  */
     LN = 266,                      /* LN  */
-    SQRT = 267                     /* SQRT  */
+    SQRT = 267,                    /* SQRT  */
+    POW = 268,                     /* POW  */
+    POW_OP = 269                   /* POW_OP  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -82,6 +84,8 @@ extern int yydebug;
 #define EXP 265
 #define LN 266
 #define SQRT 267
+#define POW 268
+#define POW_OP 269
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
@@ -96,7 +100,7 @@ union YYSTYPE
         int nb;
     } list;
 
-#line 100 "y.tab.h"
+#line 104 "y.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

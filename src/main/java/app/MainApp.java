@@ -1,12 +1,10 @@
 package app;
-import javafx.scene.Scene ;
 import javafx.scene.image.Image;
 import javafx.application.Application;
 import javafx.stage.Stage;
 import screens.SplashScreen;
 import screens.ChonkyBits;
 import screens.GomePixel;
-import javafx.scene.ImageCursor;
 
 public class MainApp extends Application {
 

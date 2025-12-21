@@ -20,8 +20,12 @@
 %token <val> N
 %token SOMME PRODUIT MOYENNE
 %token SIN COS TAN EXP LN SQRT
+%token POW POW_OP
 
-%type <val> e t f
+%right POW_OP
+
+
+%type <val> e t p f
 %type <list> liste
 
 %%
@@ -42,8 +46,8 @@ e: e '+' t {$$ = $1+$3;}
  | t {$$ = $1;}
  ;
 
-t: t '*' f {$$ = $1*$3;}
- | t '/' f { if ($3 == 0) {
+t: t '*' p {$$ = $1*$3;}
+ | t '/' p { if ($3 == 0) {
              printf("Erreur, division par 0");
              syntax_ok = 0;
              $$ = 0;
@@ -51,8 +55,15 @@ t: t '*' f {$$ = $1*$3;}
                 $$ = $1 / $3;
              }                  
              }
- | f {$$ = $1;}
+ | p {$$ = $1;}
  ;
+
+
+p:
+      f
+    | f POW_OP p { $$ = pow($1, $3); }
+;
+
 
 f: '(' e ')' {$$ = $2;}
  | '-' f    {$$ = -$2;}
@@ -61,6 +72,40 @@ f: '(' e ')' {$$ = $2;}
     | SOMME '(' liste ')'    { $$ = $3.somme; }
     | PRODUIT '(' liste ')'  { $$ = $3.produit; }
     | MOYENNE '(' liste ')'  { $$ = $3.somme / $3.nb; }
+    | SOMME '(' ')' {
+    printf("Erreur sémantique : somme() nécessite au moins un argument\n");
+    syntax_ok = 0;
+    $$ = 0;
+    }
+    | PRODUIT '(' ')' {
+        printf("Erreur sémantique : produit() nécessite au moins un argument\n");
+        syntax_ok = 0;
+        $$ = 0;
+    }
+    | MOYENNE '(' ')' {
+        printf("Erreur sémantique : moyenne() nécessite au moins un argument\n");
+        syntax_ok = 0;
+        $$ = 0;
+    }
+
+    
+    | POW '(' e ',' e ')'     { $$ = pow($3, $5); }
+    | POW '(' ')' {
+    printf("Erreur sémantique : puissance() nécessite deux arguments\n");
+    syntax_ok = 0;
+    $$ = 0;
+    }
+    | POW '(' e ')' {
+    printf("Erreur sémantique : puissance(x) invalide, 2 arguments requis\n");
+    syntax_ok = 0;
+    $$ = 0;
+    }
+    | POW '(' e ',' e ',' e ')' {
+    printf("Erreur sémantique : puissance(a,b) accepte exactement deux arguments\n");
+    syntax_ok = 0;
+    $$ = 0;
+    }
+
 
     /* fonctions à 1 argument */
     | SIN '(' e ')'   { $$ = sin($3); }
@@ -74,6 +119,31 @@ f: '(' e ')' {$$ = $2;}
         $$ = tan($3);
     }
     }
+
+    | SIN '(' ')' {
+    printf("Erreur sémantique : sin() nécessite un argument\n");
+    syntax_ok = 0;
+    $$ = 0;
+    }
+
+    | COS '(' ')' {
+        printf("Erreur sémantique : cos() nécessite un argument\n");
+        syntax_ok = 0;
+        $$ = 0;
+    }
+
+    | LN '(' ')' {
+        printf("Erreur sémantique : ln() nécessite un argument > 0\n");
+        syntax_ok = 0;
+        $$ = 0;
+    }
+    
+    | SQRT '(' ')' {
+        printf("Erreur sémantique : sqrt() nécessite un argument\n");
+        syntax_ok = 0;
+        $$ = 0;
+    }
+
 
     | EXP '(' e ')'   { $$ = exp($3); }
     | LN '(' e ')' {

@@ -3,14 +3,16 @@ package screens;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import app.SoundManager;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.ImageCursor;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
-public class Tutorials {
-
+public class TutorialsExpression {
 
     public void start(Stage stage) {
         System.out.println("Tutorials screen started.");
@@ -26,6 +28,11 @@ public class Tutorials {
         StackPane root = new StackPane(textBox);
         Scene scene = new Scene(root, 850, 600);
         stage.setScene(scene);
+        scene.setOnMousePressed(e -> {
+        SoundManager.playClick();
+        });
+        Image cursorImage = new Image(getClass().getResourceAsStream("/images/cursor.png"));
+        scene.setCursor(new ImageCursor(cursorImage));
         stage.setTitle("Compilation Playground");
         stage.show();
     }

@@ -3,6 +3,7 @@ package screens;
 import javafx.animation.PauseTransition;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.ImageCursor;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.effect.DropShadow;
@@ -13,6 +14,8 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import java.io.File;
+
+import app.SoundManager;
 import javafx.util.Duration;
 
 public class SplashScreen {
@@ -70,6 +73,12 @@ public class SplashScreen {
 
 
         stage.setScene(scene);
+        scene.setOnMousePressed(e -> {
+        SoundManager.playClick();
+        });
+        Image cursorImage = new Image(getClass().getResourceAsStream("/images/cursor.png"));
+        scene.setCursor(new ImageCursor(cursorImage));
+
         stage.setTitle("Compilation Playground");
         stage.show();
 

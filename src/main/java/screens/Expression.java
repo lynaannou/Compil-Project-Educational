@@ -1,4 +1,5 @@
 package screens;
+import service.CompilerService;
 
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -6,20 +7,25 @@ import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.paint.Color;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.media.AudioClip;
 
 import java.io.IOException;
 
+import app.SoundManager;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.ImageCursor;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
-import service.CompilerService;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextFlow;
 
 public class Expression {
 
@@ -37,18 +43,31 @@ public class Expression {
 
         Label title = new Label("Expression Parser");
         title.setFont(GomePixel.size(36));
-        title.setTextFill(Color.web("#2855b8ff"));
+        title.setTextFill(Color.web("#C23BAA"));
 
         TextField expressionInput = new TextField();
-        expressionInput.setFont(GomePixel.size(24));
+        expressionInput.setFont(ChonkyBits.size(24));
         expressionInput.setPromptText("Type your expression here...");
+        expressionInput.setStyle("-fx-text-fill:rgb(255, 166, 225);");
+        AudioClip keySound = new AudioClip(
+        SoundManager.class.getResource("/sounds/kb-sound.wav").toExternalForm()
+        );
+
+        expressionInput.addEventHandler(KeyEvent.KEY_PRESSED, e -> {
+            keySound.play();
+        });
 
         Button submitButton = new Button("Submit");
         submitButton.setFont(GomePixel.size(18));
+        submitButton.setStyle(
+                "-fx-background-color: #cfa6e2;" +
+                "-fx-text-fill: white;" +
+                "-fx-background-radius: 8;"
+        );
 
         TextArea outputArea = new TextArea();
         outputArea.setEditable(false);
-        outputArea.setFont(GomePixel.size(18));
+        outputArea.setFont(ChonkyBits.size(18));
         outputArea.setPromptText("Output will be displayed here...");
         outputArea.setWrapText(true);
         outputArea.setPrefHeight(180);
@@ -98,6 +117,12 @@ public class Expression {
         Scene scene = new Scene(root, 850, 600);
 
         stage.setScene(scene);
+        scene.setOnMousePressed(e -> {
+        SoundManager.playClick();
+        });
+
+        Image cursorImage = new Image(getClass().getResourceAsStream("/images/cursor.png"));
+        scene.setCursor(new ImageCursor(cursorImage));
         stage.setTitle("Compilation Playground");
         stage.show();
     }

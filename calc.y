@@ -26,7 +26,7 @@ int syntax_ok = 1;
 
 %token <node> N
 %token SOMME PRODUIT MOYENNE VARIANCE ECART_TYPE
-%token SIN COS TAN EXP LN SQRT
+%token SIN COS TAN EXP LN SQRT LOG
 %token POW POW_OP
 %token MIN MAX
 
@@ -109,9 +109,30 @@ f:
         $$.val = sqrt(v);
         snprintf($$.repr, sizeof($$.repr), "(ECART_TYPE ...)");
     }
+    | LOG '('e', 'e')' {
+        double m = log($3.val);
+        double n = log($5.val);
+        $$.val = m/n;
+        snprintf($$.repr, sizeof($$.repr), "(LOG ...)");
+    }
     | MIN '(' liste ')' { $$.val = $3.min; snprintf($$.repr, sizeof($$.repr), "(MIN ...)"); }
     | MAX '(' liste ')' { $$.val = $3.max; snprintf($$.repr, sizeof($$.repr), "(MAX ...)"); }
-
+    | POW '(' e ',' e ')'     { $$.val = pow($3.val, $5.val); snprintf($$.repr, sizeof($$.repr), "(PUISSANCE ...)"); }
+    | POW '(' ')' {
+    printf("Erreur sémantique : puissance() nécessite deux arguments\n");
+    syntax_ok = 0;
+    $$.val = 0;
+    }
+    | POW '(' e ')' {
+    printf("Erreur sémantique : puissance(x) invalide, 2 arguments requis\n");
+    syntax_ok = 0;
+    $$.val = 0;
+    }
+    | POW '(' e ',' e ',' e ')' {
+    printf("Erreur sémantique : puissance(a,b) accepte exactement deux arguments\n");
+    syntax_ok = 0;
+    $$.val = 0;
+    }
     /* 1-arg functions */
     | SIN '(' e ')' { $$.val = sin($3.val); snprintf($$.repr, sizeof($$.repr), "(SIN %s)", $3.repr); }
     | COS '(' e ')' { $$.val = cos($3.val); snprintf($$.repr, sizeof($$.repr), "(COS %s)", $3.repr); }
@@ -130,6 +151,74 @@ f:
         if ($3.val < 0) { printf("Erreur: sqrt non défini\n"); syntax_ok = 0; $$.val = 0; }
         else $$.val = sqrt($3.val);
         snprintf($$.repr, sizeof($$.repr), "(SQRT %s)", $3.repr);
+    }
+    | SIN '(' ')' {
+    printf("Erreur sémantique : sin() nécessite un argument\n");
+    syntax_ok = 0;
+    $$.val = 0;
+    }
+
+    | COS '(' ')' {
+        printf("Erreur sémantique : cos() nécessite un argument\n");
+        syntax_ok = 0;
+        $$.val = 0;
+    }
+
+    | LN '(' ')' {
+        printf("Erreur sémantique : ln() nécessite un argument > 0\n");
+        syntax_ok = 0;
+        $$.val = 0;
+    }
+
+    | SQRT '(' ')' {
+        printf("Erreur sémantique : sqrt() nécessite un argument\n");
+        syntax_ok = 0;
+        $$.val = 0;
+    }
+| SOMME '(' ')' {
+    printf("Erreur sémantique : somme() nécessite au moins un argument\n");
+    syntax_ok = 0;
+    $$.val = 0;
+    }
+    | PRODUIT '(' ')' {
+        printf("Erreur sémantique : produit() nécessite au moins un argument\n");
+        syntax_ok = 0;
+        $$.val = 0;
+    }
+    | MOYENNE '(' ')' {
+        printf("Erreur sémantique : moyenne() nécessite au moins un argument\n");
+        syntax_ok = 0;
+        $$.val = 0;
+    }
+    | MIN '(' ')' {
+        printf("Erreur sémantique : min() nécessite au moins un argument\n");
+        syntax_ok = 0;
+        $$.val = 0;
+    }
+    | MAX '(' ')' {
+        printf("Erreur sémantique : max() nécessite au moins un argument\n");
+        syntax_ok = 0;
+        $$.val = 0;
+    }
+    | VARIANCE '(' ')' {
+        printf("Erreur sémantique : variance() nécessite au moins un argument\n");
+        syntax_ok = 0;
+        $$.val = 0;
+    }
+    | ECART_TYPE '(' ')' {
+        printf("Erreur sémantique : ecart_type() nécessite au moins un argument\n");
+        syntax_ok = 0;
+        $$.val = 0;
+    }
+    | LOG '(' ')' {
+        printf("Erreur sémantique : log() nécessite au moins un argument\n");
+        syntax_ok = 0;
+        $$.val = 0;
+    }
+    | LOG '('e')' {
+        if ($3.val <= 0) { printf("Erreur: log non défini\n"); syntax_ok = 0; $$.val = 0; }
+        else $$.val = log($3.val);
+        snprintf($$.repr, sizeof($$.repr), "(LN %s)", $3.repr);
     }
 ;
 

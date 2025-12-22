@@ -7,7 +7,7 @@
 
 %%
 
-"somme"        return SOMME;
+"somme"       return SOMME;
 "produit"      return PRODUIT;
 "moyenne"      return MOYENNE;
 "variance"     return VARIANCE;
@@ -20,6 +20,7 @@
 "tan"          return TAN;
 "exp"          return EXP;
 "ln"           return LN;
+"log"          return LOG;
 "sqrt"         return SQRT;
 "puissance"    return POW;
 

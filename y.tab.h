@@ -51,10 +51,11 @@
      EXP = 267,
      LN = 268,
      SQRT = 269,
-     POW = 270,
-     POW_OP = 271,
-     MIN = 272,
-     MAX = 273
+     LOG = 270,
+     POW = 271,
+     POW_OP = 272,
+     MIN = 273,
+     MAX = 274
    };
 #endif
 /* Tokens.  */
@@ -70,10 +71,11 @@
 #define EXP 267
 #define LN 268
 #define SQRT 269
-#define POW 270
-#define POW_OP 271
-#define MIN 272
-#define MAX 273
+#define LOG 270
+#define POW 271
+#define POW_OP 272
+#define MIN 273
+#define MAX 274
 
 
 
@@ -98,7 +100,7 @@ typedef union YYSTYPE
 
 
 /* Line 1676 of yacc.c  */
-#line 102 "y.tab.h"
+#line 104 "y.tab.h"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */

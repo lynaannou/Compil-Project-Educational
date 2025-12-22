@@ -60,7 +60,7 @@ public class TutorialsLibrary {
         StackPane popupContainer = new StackPane(popup, textBox);
         popupContainer.setMaxSize(popup.getFitWidth(), popup.getFitHeight());
 
-        StackPane root = new StackPane(popupContainer);
+
         // background image
         Image bgImage = new Image(getClass().getResourceAsStream("/images/background-expression-screen.jpg"));
         ImageView bgView = new ImageView(bgImage);
@@ -69,13 +69,7 @@ public class TutorialsLibrary {
         bgView.setPreserveRatio(false);
 
         bgView.setOpacity(0.35);
-        javafx.scene.layout.BackgroundImage backgroundImage = new javafx.scene.layout.BackgroundImage(
-                bgImage,
-                javafx.scene.layout.BackgroundRepeat.NO_REPEAT,
-                javafx.scene.layout.BackgroundRepeat.NO_REPEAT,
-                javafx.scene.layout.BackgroundPosition.CENTER,
-                javafx.scene.layout.BackgroundSize.DEFAULT
-        );
+
         StackPane root1 = new StackPane();
         root1.getChildren().addAll(bgView, popupContainer);
 

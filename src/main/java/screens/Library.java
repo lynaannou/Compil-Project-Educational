@@ -50,8 +50,9 @@ public class Library {
 
             section("📈 Exponential & Logarithmic",
                 "exp(x) : computes e raised to the power x\n"
-              + "ln(x)  : computes the natural logarithm of x\n",
-                "Examples: exp(1), ln(2.71)\n\n"),
+              + "ln(x) : computes the natural logarithm of x\n"
+              + "log(x, b) : computes the logarithm of x with base b\n",
+                "Examples: exp(1), ln(2.71), log(100, 10)\n\n"),
 
             section("⬜ Square Root",
                 "sqrt(x) : computes the square root of x (x ≥ 0)\n",
@@ -70,6 +71,26 @@ public class Library {
                 "puissance(a, b) : computes a raised to the power of b\n",
                 "Example:\n"
               + "puissance(2, 3) → 8\n\n"),
+
+            section("🎍 Variance",
+                "variance(a, b, c, ...) : computes the statistical variance of the arguments\n",
+                "Example:\n"
+              + "variance(2, 4, 4, 4, 5, 5, 7, 9) → 4\n\n"),
+            section("🪷 Standard Deviation",
+                "ecart_type(a, b, c, ...) : computes the statistical standard deviation of the arguments\n",
+                "Example:\n"
+              + "ecart_type(2, 4, 4, 4, 5, 5, 7, 9) → 1.82\n\n"),
+
+            section("📶 Minimum & Maximum",
+                "minimum(a, b, c, ...) : returns the smallest argument\n"
+              + "maximum(a, b, c, ...) : returns the largest argument\n",
+                "Examples:\n"
+              + "minimum(3, 1, 4, 2) → 1\n"
+              + "maximum(3, 1, 4, 2) → 4\n\n"),
+
+            section("⏸️ Absolute Value",
+                "abs(x) : computes the absolute value of x\n",
+                "Example: abs(-5) → 5\n\n"),
 
             section("❌ Invalid Expressions",
                 "The following expressions are rejected by the compiler:\n",

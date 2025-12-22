@@ -14,11 +14,12 @@
         double somme;
         double produit;
         int nb;
+        double somme_carre;
     } list;
 }
 
 %token <val> N
-%token SOMME PRODUIT MOYENNE
+%token SOMME PRODUIT MOYENNE VARIANCE
 %token SIN COS TAN EXP LN SQRT
 %token POW POW_OP
 
@@ -72,6 +73,16 @@ f: '(' e ')' {$$ = $2;}
     | SOMME '(' liste ')'    { $$ = $3.somme; }
     | PRODUIT '(' liste ')'  { $$ = $3.produit; }
     | MOYENNE '(' liste ')'  { $$ = $3.somme / $3.nb; }
+    | VARIANCE '('liste')' {
+        if ($3.nb == 0) {
+        printf("Erreur sémantique : variance() nécessite au moins un argument\n");
+        syntax_ok = 0;
+        $$ = 0;
+    } else {
+        double moyenne = $3.somme / $3.nb;
+        $$ = ($3.somme_carre / $3.nb) - (moyenne * moyenne);
+    }
+    }
     | SOMME '(' ')' {
     printf("Erreur sémantique : somme() nécessite au moins un argument\n");
     syntax_ok = 0;
@@ -86,7 +97,12 @@ f: '(' e ')' {$$ = $2;}
         printf("Erreur sémantique : moyenne() nécessite au moins un argument\n");
         syntax_ok = 0;
         $$ = 0;
-    }
+    } 
+    | VARIANCE '(' ')' {
+    printf("Erreur sémantique : variance() nécessite au moins un argument\n");
+    syntax_ok = 0;
+    $$ = 0;
+}
 
     
     | POW '(' e ',' e ')'     { $$ = pow($3, $5); }
@@ -170,14 +186,16 @@ f: '(' e ')' {$$ = $2;}
 
  liste:
       e {
-            $$.somme = $1;
-            $$.produit = $1;
-            $$.nb = 1;
+        $$.somme = $1;
+        $$.somme_carre = $1 * $1;
+        $$.produit = $1;
+        $$.nb = 1;
         }
     | liste ',' e {
-            $$.somme = $1.somme + $3;
-            $$.produit = $1.produit * $3;
-            $$.nb = $1.nb + 1;
+        $$.somme = $1.somme + $3;
+        $$.somme_carre = $1.somme_carre + ($3 * $3);
+        $$.produit = $1.produit * $3;
+        $$.nb = $1.nb + 1;
         }
 ;
 

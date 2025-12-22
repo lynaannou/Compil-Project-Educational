@@ -16,6 +16,7 @@
 "sqrt"      return SQRT;
 "puissance"    return POW;
 "**"           return POW_OP;
+"variance"   return VARIANCE;
 
 [0-9]+(\.[0-9]+)? {
     yylval.val = atof(yytext);

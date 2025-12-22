@@ -1,225 +1,168 @@
 %{
-    #include <stdio.h>
-    #include <stdlib.h>
-    #include <math.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+#include "calc.h"
 
-    int yylex(void);
-    int yyerror(const char *s);
-    int syntax_ok = 1; /*this is to know if the syntax is correct or not*/
+int yylex(void);
+int yyerror(const char *s);
+int syntax_ok = 1;
+
+
+
 %}
 
 %union {
-    double val;
+    Node node;
     struct {
         double somme;
         double produit;
         int nb;
         double somme_carre;
+        double min;
+        double max;
     } list;
 }
 
-%token <val> N
-%token SOMME PRODUIT MOYENNE VARIANCE
+%token <node> N
+%token SOMME PRODUIT MOYENNE VARIANCE ECART_TYPE
 %token SIN COS TAN EXP LN SQRT
 %token POW POW_OP
+%token MIN MAX
 
 %right POW_OP
 
-
-%type <val> e t p f
+%type <node> e t p f
 %type <list> liste
 
 %%
 
 input:
-    e '\n'
-    {
+    e '\n' {
         if (syntax_ok) {
             printf("Expression correcte !\n");
-            printf("Results = %f\n", $1);
-            
+            printf("Result = %f\n", $1.val);
+            printf("Parse tree: %s\n", $1.repr);
         }
-}
+    }
 ;
 
-e: e '+' t {$$ = $1+$3;}
- | e '-' t  {$$ = $1-$3;}
- | t {$$ = $1;}
- ;
+e: e '+' t {
+        $$.val = $1.val + $3.val;
+        snprintf($$.repr, sizeof($$.repr), "(+ %s %s)", $1.repr, $3.repr);
+    }
+ | e '-' t {
+        $$.val = $1.val - $3.val;
+        snprintf($$.repr, sizeof($$.repr), "(- %s %s)", $1.repr, $3.repr);
+    }
+ | t {
+        $$.val = $1.val;
+        snprintf($$.repr, sizeof($$.repr), "%s", $1.repr);
+    }
+;
 
-t: t '*' p {$$ = $1*$3;}
- | t '/' p { if ($3 == 0) {
-             printf("Erreur, division par 0");
-             syntax_ok = 0;
-             $$ = 0;
-             }else{
-                $$ = $1 / $3;
-             }                  
-             }
- | p {$$ = $1;}
- ;
-
+t: t '*' p {
+        $$.val = $1.val * $3.val;
+        snprintf($$.repr, sizeof($$.repr), "(* %s %s)", $1.repr, $3.repr);
+    }
+ | t '/' p {
+        if ($3.val == 0) {
+            printf("Erreur, division par 0\n");
+            syntax_ok = 0; $$.val = 0;
+            snprintf($$.repr, sizeof($$.repr), "(/ %s %s)", $1.repr, $3.repr);
+        } else {
+            $$.val = $1.val / $3.val;
+            snprintf($$.repr, sizeof($$.repr), "(/ %s %s)", $1.repr, $3.repr);
+        }
+    }
+ | p {
+        $$.val = $1.val;
+        snprintf($$.repr, sizeof($$.repr), "%s", $1.repr);
+    }
+;
 
 p:
       f
-    | f POW_OP p { $$ = pow($1, $3); }
+    | f POW_OP p {
+        $$.val = pow($1.val, $3.val);
+        snprintf($$.repr, sizeof($$.repr), "(^ %s %s)", $1.repr, $3.repr);
+    }
 ;
 
+f:
+      '(' e ')' { $$.val = $2.val; snprintf($$.repr, sizeof($$.repr), "(%s)", $2.repr); }
+    | '-' f { $$.val = -$2.val; snprintf($$.repr, sizeof($$.repr), "(- %s)", $2.repr); }
+    | N { $$.val = $1.val; snprintf($$.repr, sizeof($$.repr), "%g", $1.val); }
 
-f: '(' e ')' {$$ = $2;}
- | '-' f    {$$ = -$2;}
- | N        {$$ = $1;}
- /* fonctions à N arguments */
-    | SOMME '(' liste ')'    { $$ = $3.somme; }
-    | PRODUIT '(' liste ')'  { $$ = $3.produit; }
-    | MOYENNE '(' liste ')'  { $$ = $3.somme / $3.nb; }
-    | VARIANCE '('liste')' {
-        if ($3.nb == 0) {
-        printf("Erreur sémantique : variance() nécessite au moins un argument\n");
-        syntax_ok = 0;
-        $$ = 0;
-    } else {
-        double moyenne = $3.somme / $3.nb;
-        $$ = ($3.somme_carre / $3.nb) - (moyenne * moyenne);
+    /* N-arg functions */
+    | SOMME '(' liste ')' { $$.val = $3.somme; snprintf($$.repr, sizeof($$.repr), "(SOMME ...)"); }
+    | PRODUIT '(' liste ')' { $$.val = $3.produit; snprintf($$.repr, sizeof($$.repr), "(PRODUIT ...)"); }
+    | MOYENNE '(' liste ')' { $$.val = $3.somme / $3.nb; snprintf($$.repr, sizeof($$.repr), "(MOYENNE ...)"); }
+    | VARIANCE '(' liste ')' {
+        double m = $3.somme / $3.nb;
+        $$.val = ($3.somme_carre / $3.nb) - (m * m);
+        snprintf($$.repr, sizeof($$.repr), "(VARIANCE ...)");
     }
+    | ECART_TYPE '(' liste ')' {
+        double m = $3.somme / $3.nb;
+        double v = ($3.somme_carre / $3.nb) - (m * m);
+        $$.val = sqrt(v);
+        snprintf($$.repr, sizeof($$.repr), "(ECART_TYPE ...)");
     }
-    | SOMME '(' ')' {
-    printf("Erreur sémantique : somme() nécessite au moins un argument\n");
-    syntax_ok = 0;
-    $$ = 0;
-    }
-    | PRODUIT '(' ')' {
-        printf("Erreur sémantique : produit() nécessite au moins un argument\n");
-        syntax_ok = 0;
-        $$ = 0;
-    }
-    | MOYENNE '(' ')' {
-        printf("Erreur sémantique : moyenne() nécessite au moins un argument\n");
-        syntax_ok = 0;
-        $$ = 0;
-    } 
-    | VARIANCE '(' ')' {
-    printf("Erreur sémantique : variance() nécessite au moins un argument\n");
-    syntax_ok = 0;
-    $$ = 0;
-}
+    | MIN '(' liste ')' { $$.val = $3.min; snprintf($$.repr, sizeof($$.repr), "(MIN ...)"); }
+    | MAX '(' liste ')' { $$.val = $3.max; snprintf($$.repr, sizeof($$.repr), "(MAX ...)"); }
 
-    
-    | POW '(' e ',' e ')'     { $$ = pow($3, $5); }
-    | POW '(' ')' {
-    printf("Erreur sémantique : puissance() nécessite deux arguments\n");
-    syntax_ok = 0;
-    $$ = 0;
-    }
-    | POW '(' e ')' {
-    printf("Erreur sémantique : puissance(x) invalide, 2 arguments requis\n");
-    syntax_ok = 0;
-    $$ = 0;
-    }
-    | POW '(' e ',' e ',' e ')' {
-    printf("Erreur sémantique : puissance(a,b) accepte exactement deux arguments\n");
-    syntax_ok = 0;
-    $$ = 0;
-    }
-
-
-    /* fonctions à 1 argument */
-    | SIN '(' e ')'   { $$ = sin($3); }
-    | COS '(' e ')'   { $$ = cos($3); }
+    /* 1-arg functions */
+    | SIN '(' e ')' { $$.val = sin($3.val); snprintf($$.repr, sizeof($$.repr), "(SIN %s)", $3.repr); }
+    | COS '(' e ')' { $$.val = cos($3.val); snprintf($$.repr, sizeof($$.repr), "(COS %s)", $3.repr); }
     | TAN '(' e ')' {
-    if (fabs(cos($3)) < 1e-9) {
-        printf("Erreur sémantique : tan(%f) non définie\n", $3);
-        syntax_ok = 0;
-        $$ = 0;
-    } else {
-        $$ = tan($3);
+        if (fabs(cos($3.val)) < 1e-9) { printf("Erreur: tan non définie\n"); syntax_ok = 0; $$.val = 0; }
+        else $$.val = tan($3.val);
+        snprintf($$.repr, sizeof($$.repr), "(TAN %s)", $3.repr);
     }
-    }
-
-    | SIN '(' ')' {
-    printf("Erreur sémantique : sin() nécessite un argument\n");
-    syntax_ok = 0;
-    $$ = 0;
-    }
-
-    | COS '(' ')' {
-        printf("Erreur sémantique : cos() nécessite un argument\n");
-        syntax_ok = 0;
-        $$ = 0;
-    }
-
-    | LN '(' ')' {
-        printf("Erreur sémantique : ln() nécessite un argument > 0\n");
-        syntax_ok = 0;
-        $$ = 0;
-    }
-    
-    | SQRT '(' ')' {
-        printf("Erreur sémantique : sqrt() nécessite un argument\n");
-        syntax_ok = 0;
-        $$ = 0;
-    }
-
-
-    | EXP '(' e ')'   { $$ = exp($3); }
+    | EXP '(' e ')' { $$.val = exp($3.val); snprintf($$.repr, sizeof($$.repr), "(EXP %s)", $3.repr); }
     | LN '(' e ')' {
-    if ($3 <= 0) {
-        printf("Erreur sémantique : ln(%f) n'est pas défini\n", $3);
-        syntax_ok = 0;
-        $$ = 0;
-    } else {
-        $$ = log($3);
+        if ($3.val <= 0) { printf("Erreur: ln non défini\n"); syntax_ok = 0; $$.val = 0; }
+        else $$.val = log($3.val);
+        snprintf($$.repr, sizeof($$.repr), "(LN %s)", $3.repr);
     }
-    }
-
     | SQRT '(' e ')' {
-    if ($3 < 0) {
-        printf("Erreur sémantique : sqrt(%f) n'est pas défini\n", $3);
-        syntax_ok = 0;
-        $$ = 0;
-    } else {
-        $$ = sqrt($3);
+        if ($3.val < 0) { printf("Erreur: sqrt non défini\n"); syntax_ok = 0; $$.val = 0; }
+        else $$.val = sqrt($3.val);
+        snprintf($$.repr, sizeof($$.repr), "(SQRT %s)", $3.repr);
     }
-    }
+;
 
- ;
-
- liste:
+liste:
       e {
-        $$.somme = $1;
-        $$.somme_carre = $1 * $1;
-        $$.produit = $1;
+        $$.somme = $1.val;
+        $$.somme_carre = $1.val * $1.val;
+        $$.produit = $1.val;
+        $$.min = $1.val;
+        $$.max = $1.val;
         $$.nb = 1;
-        }
+    }
     | liste ',' e {
-        $$.somme = $1.somme + $3;
-        $$.somme_carre = $1.somme_carre + ($3 * $3);
-        $$.produit = $1.produit * $3;
+        $$.somme = $1.somme + $3.val;
+        $$.somme_carre = $1.somme_carre + ($3.val * $3.val);
+        $$.produit = $1.produit * $3.val;
         $$.nb = $1.nb + 1;
-        }
+        $$.min = fmin($1.min, $3.val);
+        $$.max = fmax($1.max, $3.val);
+    }
 ;
 
 %%
 
-int yyerror(const char *s)
-{
-    fprintf(stderr,
-            "erreur de syntaxe. Les formats acceptables sont :\n"
-            " - a (entier ou nombre decimal)\n"
-            " - a operateur b\n"
-            " - (expression arithmetique) operateur (expression arithmetique)\n");
+int yyerror(const char *s) {
+    fprintf(stderr, "Erreur de syntaxe.\n");
     syntax_ok = 0;
     return 0;
 }
 
-int main(void)
-{
-     printf("Entrez une expression arithmétique :\n");
+int main(void) {
+    printf("Entrez une expression arithmétique :\n");
     yyparse();
-
-    if (!syntax_ok) {
-        printf("Analyse échouée à cause d'erreurs sémantiques.\n");
-    }
-
+    if (!syntax_ok) printf("Analyse échouée.\n");
     return 0;
 }

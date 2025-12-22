@@ -1,33 +1,56 @@
 %{
-#include "y.tab.h"
 #include <stdlib.h>
+#include <math.h>
+#include "calc.h"
+#include "y.tab.h"
 %}
 
 %%
 
-"somme"      return SOMME;
-"produit"    return PRODUIT;
-"moyenne"    return MOYENNE;
-"sin"       return SIN;
-"cos"       return COS;
-"tan"       return TAN;
-"exp"       return EXP;
-"ln"        return LN;
-"sqrt"      return SQRT;
-"puissance"    return POW;
-"**"           return POW_OP;
-"variance"   return VARIANCE;
+"somme"        return SOMME;
+"produit"      return PRODUIT;
+"moyenne"      return MOYENNE;
+"variance"     return VARIANCE;
+"ecart_type"   return ECART_TYPE;
+"min"          return MIN;
+"max"          return MAX;
 
-[0-9]+(\.[0-9]+)? {
-    yylval.val = atof(yytext);
+"sin"          return SIN;
+"cos"          return COS;
+"tan"          return TAN;
+"exp"          return EXP;
+"ln"           return LN;
+"sqrt"         return SQRT;
+"puissance"    return POW;
+
+
+"**"           return POW_OP;
+
+"pi" {
+    yylval.node.val = M_PI;
+    snprintf(yylval.node.repr, sizeof(yylval.node.repr), "pi");
     return N;
 }
 
-[ \t]+      { /* ignorer espaces */ }
-\n          { return '\n'; }
+"e" {
+    yylval.node.val = M_E;
+    snprintf(yylval.node.repr, sizeof(yylval.node.repr), "e");
+    return N;
+}
 
-"+"|"-"|"*"|"/"|"("|")" { return yytext[0]; }
-","                    { return ','; }
+[0-9]+(\.[0-9]+)? {
+    yylval.node.val = atof(yytext);
+    snprintf(yylval.node.repr, sizeof(yylval.node.repr), "%s", yytext);
+    return N;
+}
+
+
+
+[ \t]+         ;
+\n             return '\n';
+
+"+"|"-"|"*"|"/"|"("|")" return yytext[0];
+","                    return ',';
 
 . {
     printf("Caractère invalide : %s\n", yytext);
@@ -36,8 +59,4 @@
 
 %%
 
-int yywrap(void)
-{
-    return 1;
-}
-
+int yywrap(void) { return 1; }

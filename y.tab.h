@@ -44,14 +44,17 @@
      PRODUIT = 260,
      MOYENNE = 261,
      VARIANCE = 262,
-     SIN = 263,
-     COS = 264,
-     TAN = 265,
-     EXP = 266,
-     LN = 267,
-     SQRT = 268,
-     POW = 269,
-     POW_OP = 270
+     ECART_TYPE = 263,
+     SIN = 264,
+     COS = 265,
+     TAN = 266,
+     EXP = 267,
+     LN = 268,
+     SQRT = 269,
+     POW = 270,
+     POW_OP = 271,
+     MIN = 272,
+     MAX = 273
    };
 #endif
 /* Tokens.  */
@@ -60,14 +63,17 @@
 #define PRODUIT 260
 #define MOYENNE 261
 #define VARIANCE 262
-#define SIN 263
-#define COS 264
-#define TAN 265
-#define EXP 266
-#define LN 267
-#define SQRT 268
-#define POW 269
-#define POW_OP 270
+#define ECART_TYPE 263
+#define SIN 264
+#define COS 265
+#define TAN 266
+#define EXP 267
+#define LN 268
+#define SQRT 269
+#define POW 270
+#define POW_OP 271
+#define MIN 272
+#define MAX 273
 
 
 
@@ -77,20 +83,22 @@ typedef union YYSTYPE
 {
 
 /* Line 1676 of yacc.c  */
-#line 11 "calc.y"
+#line 15 "calc.y"
 
-    double val;
+    Node node;
     struct {
         double somme;
         double produit;
         int nb;
         double somme_carre;
+        double min;
+        double max;
     } list;
 
 
 
 /* Line 1676 of yacc.c  */
-#line 94 "y.tab.h"
+#line 102 "y.tab.h"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */

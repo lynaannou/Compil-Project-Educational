@@ -89,8 +89,20 @@ public class Expression {
                 outputArea.setText("An error occurred during compilation.");
             }
         });
+         Button backButton = new Button("← Back");
+        backButton.setFont(GomePixel.size(16));
+        backButton.setStyle(
+                "-fx-background-color: #F672F4;" +
+                "-fx-text-fill: white;" +
+                "-fx-background-radius: 12;"
+        );
 
-        VBox textBox = new VBox(15, title, expressionInput, submitButton, outputArea);
+        backButton.setOnAction(e -> {
+            TutorialsLibrary screen = new TutorialsLibrary();
+            screen.start(stage);
+        });
+
+        VBox textBox = new VBox(15, title, expressionInput, submitButton, outputArea, backButton);
         textBox.setAlignment(Pos.CENTER);
         textBox.setPadding(new Insets(20));
 

@@ -109,12 +109,17 @@ f:
         $$.val = sqrt(v);
         snprintf($$.repr, sizeof($$.repr), "(ECART_TYPE ...)");
     }
-    | LOG '('e', 'e')' {
-        double m = log($3.val);
-        double n = log($5.val);
-        $$.val = m/n;
-        snprintf($$.repr, sizeof($$.repr), "(LOG ...)");
+    | LOG '(' e ',' e ')' {
+    if ($3.val <= 0 || $5.val <= 0) {
+        printf("Erreur: log non défini\n");
+        syntax_ok = 0;
+        $$.val = 0;
+    } else {
+        $$.val = log($3.val) / log($5.val);
     }
+    snprintf($$.repr, sizeof($$.repr), "(LOG %s %s)", $3.repr, $5.repr);
+    }
+
     | MIN '(' liste ')' { $$.val = $3.min; snprintf($$.repr, sizeof($$.repr), "(MIN ...)"); }
     | MAX '(' liste ')' { $$.val = $3.max; snprintf($$.repr, sizeof($$.repr), "(MAX ...)"); }
     | POW '(' e ',' e ')'     { $$.val = pow($3.val, $5.val); snprintf($$.repr, sizeof($$.repr), "(PUISSANCE ...)"); }
